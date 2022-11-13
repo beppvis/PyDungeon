@@ -143,39 +143,30 @@ def move(c_player:Entity.Player,direction):
 def player_update(entities:list,direction:str):
     tiles = []
     loot = []
-    u_entities = tuple(entities)
-    for i in entities:
-        if i == Entity.Player:
-            player = i
-        elif i == Entity.Tile:
-            tiles.append(i)
-        elif i == Entity.Loot:
-            loot.append(i)
 
+    u_entities = tuple(entities)
+    for i in u_entities:
+        if type(i) == Entity.Player:
+            player = i
+        # elif type(i) == Entity.Tile:
+        #     tiles.append(i)
+        # elif type(i) == Entity.Loot:
+        #     loot.append(i)
     if direction == "a":
-        for tile in tiles:
-            if tile.y == player.y:
-                if player.x == tile.x and tile.sprite != " ":
-                    player.x = player.x
-                elif player.x == tile.x and tile.sprite == " ":
-                    player.x -= 1
-                    loc = entities.index(tile)
-                    loc_p = entities.index(player)
-                    entities.pop(loc)
-                    entities.insert(loc,player)
-                    entities.insert(loc_p,tile)
+        for entity in u_entities:
+            if type(entity) == Entity.Tile:
+                if entity.y == player.y:
+                    entity.x += 1
+            if type(entity) == Entity.Player:
+                entity.x -= 1
     if direction == "d":
-        for tile in tiles:
-            if tile.y == player.y:
-                if player.x == tile.x and tile.sprite != " ":
-                    player.x = player.x
-                elif player.x == tile.x and tile.sprite == " ":
-                    player.x += 1
-                    loc = entities.index(tile)
-                    loc_p = entities.index(player)
-                    entities.pop(loc)
-                    entities.insert(loc,player)
-                    entities.insert(loc_p,tile)
+        for entity in u_entities:
+            if type(entity) == Entity.Tile:
+                if entity.y == player.y:
+                    entity.x -= 1
+            if type(entity) == Entity.Player:
+                entity.x += 1
+    entities = list(u_entities)
     return entities
         
 
