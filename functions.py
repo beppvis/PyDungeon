@@ -53,30 +53,37 @@ def lvl_load(filename:str):
 
 def lvl_draw(entities:list):
     game = ""
-    entities = list(entities)
     af_y = 0
-    y = 1
+    y = 0
     x = 1
     i = 0
-    while not y > 50:
+    # out of range check
+    while not i > (len(entities) - 1):
         if x > 50:
-            y += 1
+            x = 1
+            y += 1 # incrementing the y value
         if entities[i].y == y and entities[i].x == x:
-            game = game + entities[i].sprite
             if af_y != entities[i].y :
-                game = game +"\n"+ entities[i].sprite
+                game = game + "\n" + entities[i].sprite
                 af_y = entities[i].y
-            else : 
-                game = game + entities[i].sprite
-            x += 1 
-            i += 1
+                x += 1
+                if not i > len(entities):
+                    i += 1
+                else:
+                    break
+
+            else :
+                if not i > len(entities)-1:
+                    game = game + entities[i].sprite
+                    x += 1
+                    i += 1
         else:
             game = game + " "
             x += 1
-            if  i != 0:
-                i -= 1
-            else:
-                i += 1
+                #if  i != 0:
+                    #i -= 1
+                #else:
+                    #i += 1
     return game
 
 def classify(Etype:int,x:int,y:int):
@@ -136,6 +143,7 @@ def move(c_player:Entity.Player,direction):
 def player_update(entities:list,direction:str):
     tiles = []
     loot = []
+    u_entities = tuple(entities)
     for i in entities:
         if i == Entity.Player:
             player = i
