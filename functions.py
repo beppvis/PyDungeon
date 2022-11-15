@@ -6,8 +6,8 @@ import Entity
 player = "O"
 distance = "  "
 tile = "#"
-limit_x = 100
-limit_y = 100
+limit_x = 49
+limit_y = 17
 down = "\n"
 loot = "L"
 
@@ -28,6 +28,32 @@ player_type ="Player"
 def second_value(val):
     return val[1]
 
+def lvl_collision(entities:list):
+    #* At last got to collision
+    pass
+
+def sort_lvl(entities:list):
+    sorted_list = []
+    x = 1
+    y = 0
+    i = 0
+    while i < len(entities):
+        if entities[i].y == y and entities[i].x == x:
+            sorted_list.append(entities[i])
+            x += 1
+            if x > limit_x:
+                x = 1
+                y += 1
+            i += 1
+        
+        else:
+            x += 1
+            if x > limit_x:
+                x = 1
+                y += 1
+                
+
+    return sorted_list
 
 def lvl_load(filename:str):
     entities = []
@@ -58,6 +84,7 @@ def lvl_draw(entities:list):
     x = 1
     i = 0
     # out of range check
+    entities = sort_lvl(entities)
     while not i > (len(entities) - 1):
         if x > 50:
             x = 1
@@ -143,30 +170,19 @@ def move(c_player:Entity.Player,direction):
 def player_update(entities:list,direction:str):
     tiles = []
     loot = []
-
-    u_entities = tuple(entities)
-    for i in u_entities:
+    entities = sort_lvl(entities=entities)
+    for i in entities:
         if type(i) == Entity.Player:
             player = i
-        # elif type(i) == Entity.Tile:
-        #     tiles.append(i)
-        # elif type(i) == Entity.Loot:
-        #     loot.append(i)
+
     if direction == "a":
-        for entity in u_entities:
-            if type(entity) == Entity.Tile:
-                if entity.y == player.y:
-                    entity.x += 1
+        for entity in entities:
             if type(entity) == Entity.Player:
                 entity.x -= 1
     if direction == "d":
-        for entity in u_entities:
-            if type(entity) == Entity.Tile:
-                if entity.y == player.y:
-                    entity.x -= 1
+        for entity in entities:
             if type(entity) == Entity.Player:
                 entity.x += 1
-    entities = list(u_entities)
     return entities
         
 

@@ -14,6 +14,7 @@ down = "\n"
 loot = "L"
 l_x =10
 l_y = 10
+
 d=0
 #* r is used to disable special characters
 
@@ -33,6 +34,7 @@ while True:
         break
     entities = functions.player_update(entities,direction)
     game = functions.lvl_draw(entities=entities)
+    print(game)
     # c_player = functions.move(c_player,direction)
     # c_player = functions.player_update(c_player)
     # c_player,c_loot = functions.entity_update(c_player, c_loot, direction)
