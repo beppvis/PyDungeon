@@ -9,7 +9,7 @@ class Player:
         self.af_y = y
         self.sprite = sprite
 class Loot:
-    def __init__(self,x:int,y:int,sprite:str):
+    def __init__(self,x:int,y:int,sprite:str,):
         self.type = "Loot"
         self.c_x = x
         self.c_y = y
