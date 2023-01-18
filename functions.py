@@ -25,8 +25,6 @@ tile_type = "TileSet"
 loot_type = "Loot"
 player_type ="Player"
 
-def second_value(val):
-    return val[1]
 
 def lvl_collision(entities:list):
     #* At last got to collision
@@ -34,25 +32,16 @@ def lvl_collision(entities:list):
 
 def sort_lvl(entities:list):
     sorted_list = []
+    makeShiftList = []
     x = 1
     y = 0
     i = 0
-    while i < len(entities):
-        if entities[i].y == y and entities[i].x == x:
-            sorted_list.append(entities[i])
-            x += 1
-            if x > limit_x:
-                x = 1
-                y += 1
-            i += 1
-        
-        else:
-            x += 1
-            if x > limit_x:
-                x = 1
-                y += 1
-                
-
+    for i in entities:
+        makeShiftList.append((i.y,i.x,i.sprite))
+    makeShiftList.sort()
+    for i in makeShiftList:
+        entity = classify(i[2],i[1],i[0])
+        sorted_list.append(entity)
     return sorted_list
 
 def lvl_load(filename:str):
@@ -85,7 +74,8 @@ def lvl_draw(entities:list):
     i = 0
     # out of range check
     entities = sort_lvl(entities)
-    while not i > (len(entities) - 1):
+
+    while i<len(entities):
         if x > 50:
             x = 1
             y += 1 # incrementing the y value
@@ -113,7 +103,13 @@ def lvl_draw(entities:list):
                     #i += 1
     return game
 
-def classify(Etype:int,x:int,y:int):
+def classify(Sprite:str,x:int,y:int):
+    if Sprite == player:
+        Etype = playerInt
+    elif Sprite == loot:
+        Etype = lootInt
+    elif Sprite == tile:
+        Etype = tileInt
     if Etype == playerInt:
         c = Entity.Player(x,y,player)
         sprite = player
@@ -170,19 +166,29 @@ def move(c_player:Entity.Player,direction):
 def player_update(entities:list,direction:str):
     tiles = []
     loot = []
-    entities = sort_lvl(entities=entities)
-    for i in entities:
-        if type(i) == Entity.Player:
-            player = i
+    #entities = sort_lvl(entities=entities)
+    # for i in entities:
+    #     if type(i) == Entity.Player:
+    #         player = i
 
     if direction == "a":
         for entity in entities:
             if type(entity) == Entity.Player:
                 entity.x -= 1
-    if direction == "d":
+    elif direction == "d":
         for entity in entities:
             if type(entity) == Entity.Player:
                 entity.x += 1
+    elif direction == "w":
+        for entity in entities:
+            if type(entity) == Entity.Player:
+                entity.y -= 1
+
+    elif direction == "s":
+        for entity in entities:
+            if type(entity) == Entity.Player:
+                entity.y += 1
+
     return entities
         
 
