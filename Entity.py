@@ -18,6 +18,7 @@ class Loot:
         self.sprite = sprite
 class Tile:
     def __init__(self,x,y,sprite):
+        self.type = "Tile"
         self.sprite = sprite
         self.x = x
         self.y = y
@@ -27,3 +28,12 @@ class TileSet:
     def __init__(self,tile_list):
         self.type = "TileSet"
         self.tiles = tile_list
+
+class Enemy:
+    def __init__(self,x:int,y:int,sprite:str):
+        self.type = "Enemy"
+        self.x = x
+        self.y = y
+        self.af_x = x
+        self.af_y = y
+        self.sprite = sprite

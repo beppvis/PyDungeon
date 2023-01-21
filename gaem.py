@@ -34,6 +34,7 @@ while True:
     if direction == "esc":
         break
     entities = functions.player_update(entities,direction)
+    entities = functions.enemy_update(entities)
     game = functions.lvl_draw(entities=entities)
     print(game)
 

@@ -2,7 +2,7 @@ from html import entities
 from typing import List
 import Entity
 
-
+enemy = "X"
 player = "O"
 distance = "  "
 tile = "#"
@@ -15,6 +15,7 @@ loot = "L"
 playerInt = 0
 lootInt = 1
 tileInt = 2
+enemyInt = 3
 
 #! assinging world limit for the world
 worldLimitY = 100
@@ -29,6 +30,16 @@ player_type ="Player"
 def lvl_collision(entities:list):
     #* At last got to collision
     pass
+
+def collide_tile(entity,tiles:list,x_move:int,y_move:int):
+    canMove = False
+    for i in tiles:
+        if i.y == entity.y and i.x == entity.x:
+            canMove = False
+        else:
+            canMove = True
+
+    return canMove
 
 def sort_lvl(entities:list):
     sorted_list = []
@@ -64,6 +75,8 @@ def lvl_load(filename:str):
         elif i == loot:
             # print("loot : ",x," ",y)
             entities.append(Entity.Loot(x,y,loot))
+        elif i == enemy:
+            entities.append(Entity.Enemy(x,y,enemy))
     return entities
 
 def lvl_draw(entities:list):
@@ -110,6 +123,9 @@ def classify(Sprite:str,x:int,y:int):
         Etype = lootInt
     elif Sprite == tile:
         Etype = tileInt
+    elif Sprite == enemy:
+        Etype = enemyInt
+
     if Etype == playerInt:
         c = Entity.Player(x,y,player)
         sprite = player
@@ -119,6 +135,8 @@ def classify(Sprite:str,x:int,y:int):
     elif Etype == tileInt:
         c = Entity.Tile(x,y,tile)
         sprite = tile
+    elif Etype == enemyInt:
+        c = Entity.Enemy(x,y,enemy)
     return c
 
 def draw(entity):
@@ -217,3 +235,62 @@ def entity_update(C_player,C_loot,direction:str):
         C_loot.y += 1
     return C_player,C_loot
 
+def enemy_update(entities:list):
+    player = None
+    enemy = None
+    tiles = []
+    for i in entities:
+        if i.type == "Player":
+            player = i
+        elif i.type == "Enemy":
+            enemy = i
+        elif i.type == "Tile":
+            tiles.append((i.x,i.y))
+    #O
+    #X
+    if enemy.y < player.y :
+        # #O#
+        if not (enemy.x + 1 ,enemy.y) in tiles or not(enemy.x - 1,enemy.y) in tiles:
+            enemy.y += 1
+        # #
+        ##O#
+        elif not (enemy.x ,enemy.y + 1) in tiles:
+            enemy.y += 1
+        if (enemy.x,enemy.y) in tiles:
+            enemy.y -= 1
+            enemy.x += 1
+            if (enemy.x,enemy.y) in tiles:
+                enemy.x -= 1
+    #X
+    #O
+    elif enemy.y > player.y:
+        if not (enemy.x + 1 ,enemy.y) in tiles or not(enemy.x - 1,enemy.y) in tiles:
+            enemy.y -= 1
+        elif not (enemy.x,enemy.y - 1) in tiles:
+            if not(enemy.x + 1,enemy.y)in tiles and enemy.x < player.x:
+                enemy.x += 1
+            elif not(enemy.x - 1,enemy.y)in tiles and enemy.x > player.x:
+                enemy.x -= 1
+
+        if (enemy.x,enemy.y) in tiles:
+            enemy.y += 1
+            enemy.x -= 1
+            if (enemy.x,enemy.y) in tiles:
+                enemy.x += 1
+    elif enemy.y == player.y:
+        if enemy.x > player.x:
+            enemy.x -= 1 
+            if (enemy.x,enemy.y) in tiles:
+                enemy.x -= 1   
+        elif enemy.x < player.x:
+            enemy.x += 1
+            if (enemy.x,enemy.y) in tiles:
+                enemy.x -= 1  
+    for i in entities:
+        if i.type == "Enemy":
+            i = enemy
+    
+    return entities
+        
+        
+    
