@@ -1,6 +1,7 @@
 import serial
 import os
 import functions
+from colorama import Fore
 import Entity
 from time import sleep
 
@@ -28,7 +29,7 @@ print(game)
 while True:
 
 
-    direction = input("You'r move : ")
+    direction = input(Fore.CYAN+"You'r move : ")
     os.system("cls")
     direction = direction.lower()
     if direction == "esc":

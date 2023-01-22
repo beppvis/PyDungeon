@@ -1,11 +1,14 @@
 from html import entities
 from typing import List
+from colorama import Fore, Back, Style
+import math
 import Entity
 
 enemy = "X"
 player = "O"
 distance = "  "
 tile = "#"
+tileSprite = Fore.GREEN + tile
 limit_x = 49
 limit_y = 17
 down = "\n"
@@ -94,7 +97,14 @@ def lvl_draw(entities:list):
             y += 1 # incrementing the y value
         if entities[i].y == y and entities[i].x == x:
             if af_y != entities[i].y :
-                game = game + "\n" + entities[i].sprite
+                if entities[i].sprite == tile:
+                    game = game +Fore.GREEN+ "\n" +entities[i].sprite
+                elif entities[i].sprite == player:
+                    game = game +Fore.BLUE+ "\n" +entities[i].sprite
+                elif entities[i].sprite == enemy:
+                    game = game + Fore.RED +  "\n" +entities[i].sprite
+                else:
+                    game = game +Fore.WHITE+ "\n" +entities[i].sprite
                 af_y = entities[i].y
                 x += 1
                 if not i > len(entities):
@@ -104,7 +114,16 @@ def lvl_draw(entities:list):
 
             else :
                 if not i > len(entities)-1:
-                    game = game + entities[i].sprite
+                    if entities[i].sprite == tile:
+                        game = game +Fore.GREEN+ entities[i].sprite
+                    elif entities[i].sprite == player:
+                        game = game +Fore.BLUE +entities[i].sprite
+                    elif entities[i].sprite == enemy:
+                        game = game + Fore.RED +entities[i].sprite
+                    elif entities[i].sprite == loot:
+                        game = game + Fore.YELLOW +entities[i].sprite
+                    else:
+                        game = game +Fore.WHITE+ entities[i].sprite
                     x += 1
                     i += 1
         else:
@@ -183,29 +202,35 @@ def move(c_player:Entity.Player,direction):
 
 def player_update(entities:list,direction:str):
     tiles = []
-    loot = []
+    loot = None
     #entities = sort_lvl(entities=entities)
-    # for i in entities:
-    #     if type(i) == Entity.Player:
-    #         player = i
-
+    for i in entities:
+        if i.type == "Player":
+            i.af_x = i.x
+            i.af_y = i.y
+            player = i
+            
+        if i.type == "Loot":
+            loot = i
     if direction == "a":
-        for entity in entities:
-            if type(entity) == Entity.Player:
-                entity.x -= 1
+        player.x -= 1
     elif direction == "d":
-        for entity in entities:
-            if type(entity) == Entity.Player:
-                entity.x += 1
+        player.x += 1
     elif direction == "w":
-        for entity in entities:
-            if type(entity) == Entity.Player:
-                entity.y -= 1
-
+        player.y -= 1
     elif direction == "s":
-        for entity in entities:
-            if type(entity) == Entity.Player:
-                entity.y += 1
+        player.y += 1
+    
+    if player.x == loot.x and player.y == loot.y:
+        print("Game won")
+        player.x = player.af_x 
+        player.y = player.af_y
+    for i in entities:
+        if i.type == "Player":
+            i = player
+            i.update_path(player.x,player.y)
+
+
 
     return entities
         
@@ -246,6 +271,7 @@ def enemy_update(entities:list):
             enemy = i
         elif i.type == "Tile":
             tiles.append((i.x,i.y))
+    
     #O
     #X
     if enemy.y < player.y :
@@ -258,7 +284,10 @@ def enemy_update(entities:list):
             enemy.y += 1
         if (enemy.x,enemy.y) in tiles:
             enemy.y -= 1
-            enemy.x += 1
+            if enemy.x > player.x:
+                enemy.x -= 1
+            else:
+                enemy.x += 1 
             if (enemy.x,enemy.y) in tiles:
                 enemy.x -= 1
     #X
@@ -269,6 +298,7 @@ def enemy_update(entities:list):
         elif not (enemy.x,enemy.y - 1) in tiles:
             if not(enemy.x + 1,enemy.y)in tiles and enemy.x < player.x:
                 enemy.x += 1
+                
             elif not(enemy.x - 1,enemy.y)in tiles and enemy.x > player.x:
                 enemy.x -= 1
 

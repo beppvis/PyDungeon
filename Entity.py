@@ -8,6 +8,9 @@ class Player:
         self.af_x = x
         self.af_y = y
         self.sprite = sprite
+        self.path = []
+    def update_path(self,x,y):
+        self.path.append((x,y))
 class Loot:
     def __init__(self,x:int,y:int,sprite:str,):
         self.type = "Loot"
