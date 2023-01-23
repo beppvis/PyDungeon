@@ -1,4 +1,5 @@
-# PyDungeon
+# Pydungeon
+
 Is a terminal only python game in making. 
 
 ## Goal
