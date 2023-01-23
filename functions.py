@@ -264,6 +264,7 @@ def enemy_update(entities:list):
     player = None
     enemy = None
     tiles = []
+    loot = None
     for i in entities:
         if i.type == "Player":
             player = i
@@ -271,7 +272,12 @@ def enemy_update(entities:list):
             enemy = i
         elif i.type == "Tile":
             tiles.append((i.x,i.y))
-    
+        elif i.type == "Loot":
+            loot = i
+    enemyToLootDist = abs(loot.x-enemy.x) + abs(loot.y-enemy.y)
+    print(enemyToLootDist)
+    playerToLootDist = abs(loot.x - player.x) + abs(loot.y - player.y)
+    print(playerToLootDist)
     #O
     #X
     if enemy.y < player.y :
@@ -280,8 +286,10 @@ def enemy_update(entities:list):
             enemy.y += 1
         # #
         ##O#
-        elif not (enemy.x ,enemy.y + 1) in tiles:
-            enemy.y += 1
+        elif not (enemy.x + 1 ,enemy.y + 1) in tiles and enemy.x < player.x:
+            enemy.x += 1
+        elif not(enemy.x - 1,enemy.y + 1) in tiles and enemy.x > player.x:
+            enemy.x -=1
         if (enemy.x,enemy.y) in tiles:
             enemy.y -= 1
             if enemy.x > player.x:
@@ -297,6 +305,7 @@ def enemy_update(entities:list):
             enemy.y -= 1
         elif not (enemy.x,enemy.y - 1) in tiles:
             if not(enemy.x + 1,enemy.y)in tiles and enemy.x < player.x:
+
                 enemy.x += 1
                 
             elif not(enemy.x - 1,enemy.y)in tiles and enemy.x > player.x:
