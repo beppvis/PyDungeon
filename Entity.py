@@ -40,3 +40,4 @@ class Enemy:
         self.af_x = x
         self.af_y = y
         self.sprite = sprite
+        self.game_over = False
