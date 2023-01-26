@@ -1,4 +1,4 @@
-import serial
+
 import os
 import functions
 from colorama import Fore
