@@ -1,3 +1,2 @@
-t = [(1,4,'#'),(1,2,'#')]
-t.sort()
-print(t)
+f = open("real_lvl.txt","w+")
+
