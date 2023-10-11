@@ -56,6 +56,7 @@ class Loot:
         self.x = x
         self.y = y
         self.sprite = sprite
+    def get_pos(self) -> tuple: return(self.x,self.y)   
 class Tile:
     def __init__(self,x,y,sprite):
         self.type = "Tile"
@@ -193,7 +194,7 @@ class Game():
         return entities
 
     def lv1_draw(self) -> str:
-        x = 0 
+        x = 1 
         y = 0
         game = ""
         self.game = ""
@@ -207,15 +208,19 @@ class Game():
             elif self.enemy.get_pos() == (x,y):
                 game = game +Fore.RED+ enemy
                 self.game = self.game + enemy
+            elif self.loot.get_pos() == (x,y):
+                game = game + Fore.YELLOW + loot
+                self.game = self.game + loot
             else:
                 game = game + " "
                 self.game = self.game + " "
             x += 1
-            if x > 50:
-                x = 0
+            if x > 49:
+                x = 1
                 y += 1
                 game = game + "\n"
                 self.game = self.game + "\n"
+                self.game = self.game.lstrip()
             if y > 17:
                 break
         return game
