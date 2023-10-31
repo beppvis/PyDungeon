@@ -27,6 +27,18 @@ worldLimitX = 100
 tile_type = "TileSet"
 loot_type = "Loot"
 player_type ="Player"
+
+class Pos:
+    def __init__(self,x:int,y:int):
+        self.x = x
+        self.y = y
+        self.tuple = (x,y)
+    def dist(self,pos)->float:return math.sqrt((pos.x-self.x)**2+ (pos.y-self.y)**2)
+
+class CollidingObj:
+    def __init__(self,colliding:bool,typ:str) -> None:
+        self.colliding = colliding
+        self.type = typ
 class Player:
     def __init__(self,x:int,y:int,sprite:str):
         self.type = "Player"
@@ -38,7 +50,7 @@ class Player:
         self.path = []
     def update_path(self,x,y):
         self.path.append((x,y))
-    def get_pos(self) -> tuple: return(self.x,self.y)
+    def get_pos(self) -> Pos: return Pos(self.x,self.y)
     def move(self,direction):
         if direction == "a":
             self.x -= 1
@@ -56,7 +68,7 @@ class Loot:
         self.x = x
         self.y = y
         self.sprite = sprite
-    def get_pos(self) -> tuple: return(self.x,self.y)   
+    def get_pos(self) -> Pos: return Pos(self.x,self.y)
 class Tile:
     def __init__(self,x,y,sprite):
         self.type = "Tile"
@@ -65,6 +77,7 @@ class Tile:
         self.y = y
         self.af_x = x
         self.af_y = y
+    def get_pos(self) -> Pos: return Pos(self.x,self.y)
 class TileSet():
     def __init__(self,tiles:list) -> None:
         self.tiles = tiles
@@ -86,7 +99,8 @@ class Enemy:
         self.game_over = False
         self.states = ["FOLLOW","HIT"]
         self.state = self.states[0]
-    def get_pos(self) -> tuple: return (self.x,self.y)
+    
+    def get_pos(self) -> Pos: return Pos(self.x,self.y)
     def collishion_check(self,x,y,entities:list,typ:str = "Tile")->bool:
         #[tile,tile,player]
         for entity in entities:
@@ -104,52 +118,40 @@ class Enemy:
         pass
     def follow(self,game_obj):
         #*Wall collishion
-        #self.collishion_check(entities,"Tile")
-        player = game_obj.player
-        x = self.x
-        y = self.y
-        self.af_x = x
-        self.af_y = y
-        targ_x = player.x
-        targ_y = player.y
-
-
-        #[top,bottom,left,right]
-        possible = self.possible(x,y,game_obj.tiles)
-        if targ_y>y and possible["bottom"]:
-            y+=1
-        elif targ_y < y and possible["top"]:
-            y-=1
-        if targ_x > x and possible["right"]:
-            x += 1
-        elif targ_x < x and possible["left"]:
-            x -= 1
-        if targ_y == y :
-            if possible["right"] or possible["left"]:
-                if targ_x > x:
-                    x += 1
-                elif targ_x < x :
-                    x -= 1
-            else:
-                if possible["top"] or possible["bottom"]:
-                    if math.dist([x,y+1],[targ_x,targ_y]) < math.dist([x.y-1],[targ_x,targ_y]):
-                        y += 1
-                    else:
-                        y -= 1
-        self.x = x
-        self.y = y
+        #sis colliding -> CollidingObs
+        player_pos = game_obj.player.get_pos()
+        enemy_pos = self.get_pos()
+        up_pos = Pos(enemy_pos.x,enemy_pos.y - 1)
+        down_pos = Pos(enemy_pos.x ,enemy_pos.y + 1)
+        right_pos = Pos(enemy_pos.x + 1,enemy_pos.y)
+        left_pos = Pos(enemy_pos.x - 1,enemy_pos.y)
+        upcollidingObj:CollidingObj = game_obj.is_colliding(up_pos.tuple)
+        downcollidingObj:CollidingObj = game_obj.is_colliding(down_pos.tuple)
+        rightcollidingObj:CollidingObj = game_obj.is_colliding(right_pos.tuple)
+        leftcollidingObj:CollidingObj = game_obj.is_colliding(left_pos.tuple)
+        updist = up_pos.dist(player_pos)
+        downdist = down_pos.dist(player_pos)
+        rightdist = right_pos.dist(player_pos)
+        leftdist = left_pos.dist(player_pos)
+        print(upcollidingObj.colliding,downcollidingObj.colliding,leftcollidingObj.colliding,rightcollidingObj.colliding)
+        if updist < downdist and not upcollidingObj.colliding:
+            enemy_pos.y -= 1
+        elif updist > downdist and not downcollidingObj.colliding:
+            enemy_pos.y += 1
+        elif rightdist < leftdist and not rightcollidingObj.colliding:
+            enemy_pos.x += 1
+        elif rightdist > leftdist and not  leftcollidingObj.colliding:
+            enemy_pos.x -= 1
+        self.x = enemy_pos.x
+        self.y = enemy_pos.y
         game_obj.enemy = self
-    def possible(self,x,y,entities) -> dict:
-        top,bottom,left,right = 1,2,2,3
-        if not self.collishion_check(x,y-1,entities):
-            top = True
-        elif not self.collishion_check(x,y+1,entities):
-            bottom = True
-        elif not self.collishion_check(x-1,y,entities):
-            left = True
-        elif not self.collishion_check(x+1,y,entities):
-            right = True
-        return{"top":top,"bottom":bottom,"left":left,"right":right}
+            
+
+
+
+ 
+
+        
 class Game():
     def __init__(self,file_name) -> None:
         self.entities = self.lvl_load(file_name)
@@ -166,7 +168,27 @@ class Game():
                 self.loot = entity
         self.tilesSet = TileSet(self.tiles)
     def get_player(self)->Player:return self.player
-    def get_enemy(self)->Enemy: return self.enemy                        
+    def get_enemy(self)->Enemy: return self.enemy       
+    def is_colliding(self,pos:tuple) -> CollidingObj:
+        obj = None
+        colliding = False
+        for tile in self.tiles:
+            if tile.get_pos().tuple == pos:
+                obj = "Tile"
+                colliding = True
+                return CollidingObj(colliding,obj)
+        if self.player.get_pos().tuple == pos:
+            obj = "Player"
+            colliding = True
+        elif self.enemy.get_pos().tuple == pos:
+            obj = "Enemy"
+            colliding = True
+        elif self.loot.get_pos().tuple == pos:
+            obj = "Loot"
+            colliding = True
+        else:
+            colliding = False
+        return CollidingObj(colliding,obj)
     def lvl_load(self,file_name:str):
         entities = []
         x = 0
@@ -202,13 +224,13 @@ class Game():
             if self.tilesSet.is_there(x,y):
                 game = game + Fore.WHITE    +tile
                 self.game = self.game + tile
-            elif self.player.get_pos() == (x,y):
+            elif self.player.get_pos().tuple == (x,y):
                 game = game + Fore.BLUE+player
                 self.game = self.game + player
-            elif self.enemy.get_pos() == (x,y):
+            elif self.enemy.get_pos().tuple == (x,y):
                 game = game +Fore.RED+ enemy
                 self.game = self.game + enemy
-            elif self.loot.get_pos() == (x,y):
+            elif self.loot.get_pos().tuple == (x,y):
                 game = game + Fore.YELLOW + loot
                 self.game = self.game + loot
             else:
@@ -228,5 +250,3 @@ class Game():
         f = open(self.lvl_filename,'w')
         f.write(self.game)
         f.close()
-
-            

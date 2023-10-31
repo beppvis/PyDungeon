@@ -33,6 +33,7 @@ while not game.game_over :
         game.lvl_save()
         break
     game.player.move(direction)
+    game.enemy.follow(game)
     print(game.lv1_draw())
 
 
