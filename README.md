@@ -5,6 +5,10 @@
 
 Is a terminal only python game in making. 
 
+## Installation and Running
+Download the source code and run the gaem.py file.
+
+
 ## Goal
 My goal is to make a game in which no external module is used. I hope you reading this can condribute to this project :)
 
