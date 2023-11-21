@@ -9,6 +9,7 @@ Is a terminal only python game in making.
 Download the source code and run the gaem.py file.
 ### Control
 The WASD key scheme is used as input.
+
 win -> When player ('O') reachers the end ('L')
 lose -> When the enemy ('X') captures the player ('O')
 ## Goal
