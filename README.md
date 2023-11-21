@@ -1,5 +1,7 @@
 # Pydungeon
 
+![Poster](https://github.com/beppvis/PyDungeon/assets/67070783/3cd5a888-4d68-4aac-981a-473b3e69a3bf)
+
 Is a terminal only python game in making. 
 
 ## Goal
