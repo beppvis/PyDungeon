@@ -11,6 +11,7 @@ Download the source code and run the gaem.py file.
 The WASD key scheme is used as input.
 
 win -> When player ('O') reachers the end ('L')
+
 lose -> When the enemy ('X') captures the player ('O')
 ## Goal
 My goal is to make a game in which no external module is used. I hope you reading this can condribute to this project :)
