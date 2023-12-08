@@ -1,0 +1,3 @@
+O -> Player
+X -> Enemy
+L -> Loot
