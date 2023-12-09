@@ -101,7 +101,7 @@ class Player:
                         return False
     def get_pos(self) -> Pos: return Pos(self.x,self.y)
     def move(self,direction):
-        
+        self.collishion_check(self.x,self.y,self.game.entities)
         if direction == "a":
             self.x -= 1
         elif direction == "d":
@@ -178,22 +178,21 @@ class Enemy:
     def collishion_check(self,x,y,entities:list,typ:str = "Tile")->bool:
         #[tile,tile,player]
         for entity in entities:
-            match entity.type:
-                case "Tile":
-                    if (x,y) == (entity.x,entity.y):
-                        return True if typ == "Tile" else False
-                case "Player":
-                    if (x,y) == (entity.x,entity.y):
-                        self.game.game_over = True
-                        
-                case "Enemy":
-                    if (x,y) == (entity.x,entity.y):
-                        return True if typ == "Enemy" else False
+            if (x,y) == (entity.x,entity.y):
+                match entity.type:
+                    case "Tile":
+                            return True if typ == "Tile" else False
+                    case "Player":
+                            self.game.game_over = True
+                            return False
+                    case "Enemy":
+                            return True if typ == "Enemy" else False
     def move(self,player:Player):
         pass
     def follow(self,game_obj):
         #*Wall collishion
         #sis colliding -> CollidingObs
+        self.collishion_check(self.x,self.y,game_obj.entities)
         player_pos = game_obj.player.get_pos()
         enemy_pos = self.get_pos()
         up_pos = Pos(enemy_pos.x,enemy_pos.y - 1)
@@ -237,6 +236,7 @@ class Game():
         self.gates = []
         self.tiles=[]
         self.enemies = []
+        self.exit_gate =[]
         self.game_over = False
         
         for entity in self.entities:
@@ -251,6 +251,9 @@ class Game():
                 self.key = entity
             elif entity.type == "Gate":
                 self.gates.append(entity)
+                if entity.destination == -1:
+                    self.exit_gate.append(entity)
+        self.exitgateSet = Set(self.exit_gate)
         self.tilesSet = TileSet(self.tiles)
         self.enemySet = Set(self.enemies)
         
@@ -307,7 +310,7 @@ class Game():
                 elif i == lvl_4:
                     entities.append(Gate(x,y,4,True,[1,2,3]))
                 elif i == Exit:
-                    entities.append(Gate(x,y,0,True,[1,2,3,4]))           
+                    entities.append(Gate(x,y,-1,True,[1,2,3,4]))           
             lvl_string = lvl_file.readline()
         lvl_file.close()
         return entities
@@ -330,6 +333,9 @@ class Game():
             elif self.key.get_pos().tuple == (x,y) and self.key.visible :
                 game = game + Fore.YELLOW + key
                 self.game = self.game + key
+            elif self.exitgateSet.is_there(x,y):
+                game = game+ Fore.GREEN + Exit
+                self.game = self.game + Exit
             else:
                 game = game + " "
                 self.game = self.game + " "
@@ -389,7 +395,7 @@ class Level():
             with open("assets/gameover.txt",encoding="utf8") as over_f:
                 over = over_f.read()
                 print(Fore.RED + over)
-            time.sleep(3)
+            time.sleep(2)
             self.changed_to = -1
         
         if pl.y == 0:
