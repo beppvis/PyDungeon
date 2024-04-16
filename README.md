@@ -4,7 +4,7 @@
 
 
 
-## Installation and Running
+## Installation
 Download the source code and run the gaem.py file.
 ### Control
 The WASD key scheme is used as input.
