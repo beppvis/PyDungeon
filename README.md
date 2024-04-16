@@ -6,7 +6,7 @@
 
 ## Installation
 Download the source code and run the gaem.py file.
-### Control
+## Controls
 The WASD key scheme is used as input.
 
 win -> At the 4th level
@@ -14,10 +14,10 @@ win -> At the 4th level
 lose -> When the enemy ('X') captures the player ('O')
 
 
-## TO-DO
+### TO-DO
 -Networking
 
-## Finished jobs
+### Finished jobs
 - Created an text file to level
 - Created an render system
 - Created enemy AI
