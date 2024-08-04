@@ -381,7 +381,10 @@ class Level():
             
             print(Fore.WHITE + self.game_obj.lv1_draw())
             direction = input(Fore.CYAN+"You'r move : ")
-            os.system("cls")
+            if os.name == "posix":
+                os.system("clear")
+            else:
+                os.system("cls")
             direction = direction.lower()
             if direction == "esc":
                 os._exit(0)

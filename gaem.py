@@ -1,6 +1,5 @@
 
 import os
-import functions
 from colorama import Fore
 import Entity
 import time
@@ -28,7 +27,11 @@ level_3 = Entity.Level("assets/level3.txt",3)
 level_4 = Entity.Level("assets/level4.txt",4)
 curr_lvl = level_1
 #time.sleep(3)
-os.system("cls")
+print(os.name)
+if os.name =="posix":
+    os.system("clear")
+else:
+    os.system("cls")
 while not game_over:
     if player != None:
         nxt_lvl, player = curr_lvl.run(player)
